@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CircleProgressBar</string>
+    <string name="action_settings">Settings</string>
+    <string name="progress_text_format_pattern">t %d ps</string>
+</resources>

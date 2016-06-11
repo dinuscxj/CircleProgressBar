@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <declare-styleable name="CircleProgressBar">
+    <attr name="line_count" format="integer"/>
+    <attr name="draw_progress_text" format="boolean"/>
+    <attr name="line_width" format="dimension|reference"/>
+    <attr name="progress_color" format="color|reference"/>
+    <attr name="progress_text_color" format="color|reference"/>
+    <attr name="progress_text_size" format="dimension|reference"/>
+    <attr name="progress_stroke_width" format="dimension|reference"/>
+    <attr name="progress_background_color" format="color|reference"/>
+    <attr name="progress_text_format_pattern" format="string|reference"/>
+
+    <attr name="style">
+      <enum name="line" value="0"/>
+      <enum name="solid" value="1"/>
+    </attr>
+  </declare-styleable>
+</resources>
