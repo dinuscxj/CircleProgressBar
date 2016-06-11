@@ -1,13 +1,11 @@
 
 ## CircleProgressBar
-[中文版文档](https://github.com/dinuscxj/CircleProgressBar/blob/master/README-ZH.md)&nbsp;&nbsp;&nbsp;
-
-The CircleProgressBar extends ProgressBar, It has both solid and line two styles. Besides, progress value can be freely customized.
-If you are interested in cool loading animations, you can see [LoadingDrawable](https://github.com/dinuscxj/LoadingDrawable).
+CircleProgressBar继承ProgressBar, 是包含实心和线条两种风格的圆环进度条. 此外, 进度值可以随意定制.
+如果你对酷炫的进度条比较感兴趣, 或许你更喜欢 [LoadingDrawable](https://github.com/dinuscxj/LoadingDrawable).
 
 ![](https://raw.githubusercontent.com/dinuscxj/CircleProgressBar/master/Preview/CircleProgressBar.gif?width=300)
 
-### Usage
+### 用法
 
 #### Gradle
  ```gradle
@@ -16,7 +14,7 @@ If you are interested in cool loading animations, you can see [LoadingDrawable](
  }
  ```
 
-#### Used in xml:
+#### 用在xml中:
 
 ```xml
 <com.dinuscxj.progressbar.CircleProgressBar
@@ -26,8 +24,8 @@ If you are interested in cool loading animations, you can see [LoadingDrawable](
 	android:layout_height="50dp" />
 ```
 
-### Attributes
-There are several attributes you can set:
+### 属性
+有下面这些属性你可以设置:
 
 The **style**:
 
@@ -52,7 +50,7 @@ The **line style**:
 * width
 * count
 
-for example :
+例如:
 ```xml
 <com.dinuscxj.progressbar.CircleProgressBar
 	android:layout_width="50dp"
@@ -72,14 +70,14 @@ for example :
 	app:line_width="4dp"
 	app:line_count="30"/>
 ```
-### Advantages
-1. Inheritance ProgressBar, do not care to save the current state of progress, ProgressBar has written in to help us in onSaveInstanceState () and onRestoreInstanceState (Parcelable state).
-2. highly customizable, you can set the two styles of progress bar, you can set the color of the bars, you can set the color and size of the progress of the text, due to the progress of the code for formatting text uses String.format (), so progress text can be customized as needed
-3. Code elegant, very comprehensive code comments, neat format, you can set the relevant properties directly in xml.
+### 优点
+1. 继承ProgressBar， 不必关心当前进度状态的保存， ProgressBar 已经在onSaveInstanceState（）和 onRestoreInstanceState(Parcelable state)中帮我们写好了。
+2. 定制性很强，可以设置两种风格的进度条，设置进度条的颜色和进度文本的颜色和大小， 由于代码中对于进度文本的格化化是使用的String.format(), 所以进度文本可以根据需要随意定制
+3. 代码优雅，代码注释很全面，格式整齐，可以直接在xml中设置相关的属性。
 
-### About me
-I like Android, like open source, and like doing something interesting. :)
-If you like CircleProgressBar or use it, you can star this repo and send me some feedback. Thanks! ~_~
+### 关于我
+本人喜欢android、开源而且比较喜欢做一些有意思的东西 :)
+如果你喜欢LoadingDrawable或者正在使用它，欢迎star这个项目， 并且希望反馈给我一些建议. 谢谢! ~_~
 
 ### License
     Copyright 2015-2019 dinuscxj
