@@ -73,7 +73,7 @@ for example :
 	app:line_count="30"/>
 ```
 ### Advantages
-1. Inheritance ProgressBar, do not care to save the current state of progress, ProgressBar has written in to help us in onSaveInstanceState () and onRestoreInstanceState (Parcelable state).
+1. extends ProgressBar, do not care to save the current state of progress, ProgressBar has written in to help us in onSaveInstanceState () and onRestoreInstanceState (Parcelable state).
 2. highly customizable, you can set the two styles of progress bar, you can set the color of the bars, you can set the color and size of the progress of the text, due to the progress of the code for formatting text uses String.format (), so progress text can be customized as needed
 3. Code elegant, very comprehensive code comments, neat format, you can set the relevant properties directly in xml.
 
