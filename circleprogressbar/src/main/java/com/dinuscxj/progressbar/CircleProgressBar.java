@@ -233,6 +233,7 @@ public class CircleProgressBar extends ProgressBar {
 
     public void setProgressTextFormatPattern(String progressTextformatPattern) {
         this.mProgressTextFormatPattern = progressTextformatPattern;
+        invalidate();
     }
 
     public String getProgressTextFormatPattern() {
@@ -242,7 +243,6 @@ public class CircleProgressBar extends ProgressBar {
     public void setProgressStrokeWidth(float progressStrokeWidth) {
         this.mProgressStrokeWidth = progressStrokeWidth;
         mProgressRectF.inset(mProgressStrokeWidth / 2, mProgressStrokeWidth / 2);
-
         invalidate();
     }
 
@@ -277,7 +277,6 @@ public class CircleProgressBar extends ProgressBar {
         return mProgressTextColor;
     }
 
-
     public void setProgressBackgroundColor(int progressBackgroundColor) {
         this.mProgressBackgroundColor = progressBackgroundColor;
         invalidate();
@@ -293,6 +292,7 @@ public class CircleProgressBar extends ProgressBar {
 
     public void setLineCount(int lineCount) {
         this.mLineCount = lineCount;
+        invalidate();
     }
 
     public float getLineWidth() {
@@ -301,6 +301,7 @@ public class CircleProgressBar extends ProgressBar {
 
     public void setLineWidth(float lineWidth) {
         this.mLineWidth = lineWidth;
+        invalidate();
     }
 
     public int getStyle() {
@@ -309,5 +310,6 @@ public class CircleProgressBar extends ProgressBar {
 
     public void setStyle(@Style int style) {
         this.mStyle = style;
+        invalidate();
     }
 }
