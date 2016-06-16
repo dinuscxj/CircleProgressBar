@@ -31,6 +31,7 @@ The **style**:
 
 * solid
 * line
+* solid_line
 
 The **progress text**:
 
@@ -42,15 +43,28 @@ The **progress text**:
 The **progress circle**:
 
 * width
-* color
+* start_color
+* end_color
 * background color
+
+The **progress_shader**
+
+* linear
+* radial
+* sweep
+
+The **progress_stroke_cap**
+
+* butt
+* round
+* square
 
 The **line style**:
 
 * width
 * count
 
-例如:
+例如 :
 ```xml
 <com.dinuscxj.progressbar.CircleProgressBar
 	android:layout_width="50dp"
@@ -64,8 +78,13 @@ The **line style**:
 	app:progress_text_format_pattern="@string/progress_text_format_pattern"
 
 	app:progress_stroke_width="1dp"
-	app:progress_color="@color/holo_purple"
+	app:progress_start_color="@color/holo_purple"
+	app:progress_end_color="@color/holo_green_light"
 	app:progress_background_color="@color/holo_darker_gray"
+
+	app:progress_shader="sweep"
+    
+	app:progress_stroke_cap="round"
 
 	app:line_width="4dp"
 	app:line_count="30"/>

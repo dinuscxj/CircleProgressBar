@@ -25,7 +25,7 @@
     <!-- A really bright Holo shade of gray -->
     <color name="holo_gray_bright">#33CCCCCC</color>
     <!-- A really lighter Holo shade of gray -->
-    <color name="holo_lighter_gray">#ffdddddd</color>
+    <color name="holo_lighter_gray">#ffefefef</color>
     <!-- A really darker Holo shade of gray -->
     <color name="holo_darker_gray">#ffaaaaaa</color>
 </resources>
