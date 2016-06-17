@@ -1,6 +1,6 @@
 
 ## CircleProgressBar
-CircleProgressBar继承ProgressBar, 是包含实心和线条两种风格的圆环进度条. 此外, 进度值可以随意定制.
+[CircleProgressBar](https://github.com/dinuscxj/CircleProgressBar)继承ProgressBar, 是包含实心和线条两种风格的圆环进度条. 此外, 进度值可以随意定制.
 如果你对酷炫的进度条比较感兴趣, 或许你更喜欢 [LoadingDrawable](https://github.com/dinuscxj/LoadingDrawable).
 
 ![](https://raw.githubusercontent.com/dinuscxj/CircleProgressBar/master/Preview/CircleProgressBar.gif?width=300)
@@ -10,13 +10,13 @@ CircleProgressBar继承ProgressBar, 是包含实心和线条两种风格的圆�
 #### Gradle
  ```gradle
  dependencies {
-    compile 'com.dinuscxj:circleprogressbar:1.0.0'
+    compile 'com.dinuscxj:circleprogressbar:1.1.0'
  }
  ```
 
 #### 用在xml中:
 
-```xml
+```java
 <com.dinuscxj.progressbar.CircleProgressBar
 	android:id="@+id/line_progress"
 	android:layout_marginTop="@dimen/default_margin"
@@ -29,9 +29,9 @@ CircleProgressBar继承ProgressBar, 是包含实心和线条两种风格的圆�
 
 The **style**:
 
-* solid
-* line
+* line (默认)
 * solid_line
+* solid
 
 The **progress text**:
 
@@ -49,13 +49,13 @@ The **progress circle**:
 
 The **progress_shader**
 
-* linear
+* linear (默认，如果start_color和end_color相同则不会设置shader)
 * radial
 * sweep
 
 The **progress_stroke_cap**
 
-* butt
+* butt (默认)
 * round
 * square
 
@@ -65,7 +65,7 @@ The **line style**:
 * count
 
 例如 :
-```xml
+```java
 <com.dinuscxj.progressbar.CircleProgressBar
 	android:layout_width="50dp"
 	android:layout_height="50dp"
@@ -96,7 +96,7 @@ The **line style**:
 
 ### 关于我
 本人喜欢android、开源而且比较喜欢做一些有意思的东西 :)
-如果你喜欢LoadingDrawable或者正在使用它，欢迎star这个项目， 并且希望反馈给我一些建议. 谢谢! ~_~
+如果你喜欢CircleProgressBar或者正在使用它，欢迎star这个项目， 并且希望反馈给我一些建议. 谢谢! ~_~
 
 ### License
     Copyright 2015-2019 dinuscxj

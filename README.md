@@ -2,7 +2,7 @@
 ## CircleProgressBar
 [中文版文档](https://github.com/dinuscxj/CircleProgressBar/blob/master/README-ZH.md)&nbsp;&nbsp;&nbsp;
 
-The CircleProgressBar extends ProgressBar, It has both solid and line two styles. Besides, progress value can be freely customized.
+The [CircleProgressBar](https://github.com/dinuscxj/CircleProgressBar) extends ProgressBar, It has both solid and line two styles. Besides, progress value can be freely customized.
 If you are interested in cool loading animations, you can see [LoadingDrawable](https://github.com/dinuscxj/LoadingDrawable).
 
 ![](https://raw.githubusercontent.com/dinuscxj/CircleProgressBar/master/Preview/CircleProgressBar.gif?width=300)
@@ -12,13 +12,13 @@ If you are interested in cool loading animations, you can see [LoadingDrawable](
 #### Gradle
  ```gradle
  dependencies {
-    compile 'com.dinuscxj:circleprogressbar:1.0.0'
+    compile 'com.dinuscxj:circleprogressbar:1.1.0'
  }
  ```
 
 #### Used in xml:
 
-```xml
+```java
 <com.dinuscxj.progressbar.CircleProgressBar
 	android:id="@+id/line_progress"
 	android:layout_marginTop="@dimen/default_margin"
@@ -31,9 +31,9 @@ There are several attributes you can set:
 
 The **style**:
 
-* solid
-* line
+* line （default）
 * solid_line
+* solid
 
 The **progress text**:
 
@@ -51,13 +51,13 @@ The **progress circle**:
 
 The **progress_shader**
 
-* linear
+* linear (default，but if start_color and end_color equivalence, will not set the shader)
 * radial
 * sweep
 
 The **progress_stroke_cap**
 
-* butt
+* butt (default)
 * round
 * square
 
@@ -67,7 +67,7 @@ The **line style**:
 * count
 
 for example :
-```xml
+```java
 <com.dinuscxj.progressbar.CircleProgressBar
 	android:layout_width="50dp"
 	android:layout_height="50dp"
