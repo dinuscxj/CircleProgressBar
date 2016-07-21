@@ -45,12 +45,18 @@ public class CircleProgressBar extends ProgressBar {
     private final Rect mProgressTextRect = new Rect();
 
     private final Paint mProgressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint mProgressBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
     private final Paint mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
     private final Paint mProgressTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     private float mRadius;
     private float mCenterX;
     private float mCenterY;
+
+    //Background Color of the progress bar
+    private int mBackgroundColor;
 
     //Only work well in the Line Style, represents the line count of the rings included
     private int mLineCount;
@@ -93,7 +99,7 @@ public class CircleProgressBar extends ProgressBar {
     //The Shader of mProgressPaint
     @ShaderMode
     private int mShader;
-    //The Stroke Cap of mProgressPaint and mBackgroundPaint
+    //The Stroke Cap of mProgressPaint and mProgressBackgroundPaint
     private Paint.Cap mCap;
 
     public CircleProgressBar(Context context) {
@@ -113,6 +119,8 @@ public class CircleProgressBar extends ProgressBar {
     @SuppressWarnings("ResourceType")
     private void initFromAttributes(Context context, AttributeSet attrs) {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CircleProgressBar);
+
+        mBackgroundColor = a.getColor(R.styleable.CircleProgressBar_background_color, Color.TRANSPARENT);
 
         mDrawProgressText = a.getBoolean(R.styleable.CircleProgressBar_draw_progress_text, true);
 
@@ -149,10 +157,13 @@ public class CircleProgressBar extends ProgressBar {
         mProgressPaint.setColor(mProgressStartColor);
         mProgressPaint.setStrokeCap(mCap);
 
-        mBackgroundPaint.setStyle(mStyle == SOLID ? Paint.Style.FILL : Paint.Style.STROKE);
-        mBackgroundPaint.setStrokeWidth(mProgressStrokeWidth);
-        mBackgroundPaint.setColor(mProgressBackgroundColor);
-        mBackgroundPaint.setStrokeCap(mCap);
+        mProgressBackgroundPaint.setStyle(mStyle == SOLID ? Paint.Style.FILL : Paint.Style.STROKE);
+        mProgressBackgroundPaint.setStrokeWidth(mProgressStrokeWidth);
+        mProgressBackgroundPaint.setColor(mProgressBackgroundColor);
+        mProgressBackgroundPaint.setStrokeCap(mCap);
+
+        mBackgroundPaint.setStyle(Paint.Style.FILL);
+        mBackgroundPaint.setColor(mBackgroundColor);
     }
 
     /**
@@ -222,8 +233,15 @@ public class CircleProgressBar extends ProgressBar {
 
     @Override
     protected synchronized void onDraw(Canvas canvas) {
+        drawBackground(canvas);
         drawProgress(canvas);
         drawProgressText(canvas);
+    }
+
+    private void drawBackground(Canvas canvas) {
+        if (mBackgroundColor != Color.TRANSPARENT) {
+            canvas.drawCircle(mCenterX, mCenterX, mRadius, mBackgroundPaint);
+        }
     }
 
     private void drawProgressText(Canvas canvas) {
@@ -276,7 +294,7 @@ public class CircleProgressBar extends ProgressBar {
             if (i < progressLineCount) {
                 canvas.drawLine(startX, startY, stopX, stopY, mProgressPaint);
             } else {
-                canvas.drawLine(startX, startY, stopX, stopY, mBackgroundPaint);
+                canvas.drawLine(startX, startY, stopX, stopY, mProgressBackgroundPaint);
             }
         }
     }
@@ -285,7 +303,7 @@ public class CircleProgressBar extends ProgressBar {
      * Just draw arc
      */
     private void drawSolidProgress(Canvas canvas) {
-        canvas.drawArc(mProgressRectF, DEFAULT_START_DEGREE, 360.0f, false, mBackgroundPaint);
+        canvas.drawArc(mProgressRectF, DEFAULT_START_DEGREE, 360.0f, false, mProgressBackgroundPaint);
         canvas.drawArc(mProgressRectF, DEFAULT_START_DEGREE, 360.0f * getProgress() / getMax(), true, mProgressPaint);
     }
 
@@ -293,7 +311,7 @@ public class CircleProgressBar extends ProgressBar {
      * Just draw arc
      */
     private void drawSolidLineProgress(Canvas canvas) {
-        canvas.drawArc(mProgressRectF, DEFAULT_START_DEGREE, 360.0f, false, mBackgroundPaint);
+        canvas.drawArc(mProgressRectF, DEFAULT_START_DEGREE, 360.0f, false, mProgressBackgroundPaint);
         canvas.drawArc(mProgressRectF, DEFAULT_START_DEGREE, 360.0f * getProgress() / getMax(), false, mProgressPaint);
     }
 
@@ -316,6 +334,16 @@ public class CircleProgressBar extends ProgressBar {
 
         //Prevent the progress from clipping
         mProgressRectF.inset(mProgressStrokeWidth / 2, mProgressStrokeWidth / 2);
+    }
+
+    public int getBackgroundColor() {
+        return mBackgroundColor;
+    }
+
+    public void setBackgroundColor(int backgroundColor) {
+        this.mBackgroundColor = backgroundColor;
+        mBackgroundPaint.setColor(backgroundColor);
+        invalidate();
     }
 
     public void setProgressTextFormatPattern(String progressTextformatPattern) {
@@ -377,7 +405,7 @@ public class CircleProgressBar extends ProgressBar {
 
     public void setProgressBackgroundColor(int progressBackgroundColor) {
         this.mProgressBackgroundColor = progressBackgroundColor;
-        mBackgroundPaint.setColor(mProgressBackgroundColor);
+        mProgressBackgroundPaint.setColor(mProgressBackgroundColor);
         invalidate();
     }
 
@@ -410,7 +438,7 @@ public class CircleProgressBar extends ProgressBar {
     public void setStyle(@Style int style) {
         this.mStyle = style;
         mProgressPaint.setStyle(mStyle == SOLID ? Paint.Style.FILL : Paint.Style.STROKE);
-        mBackgroundPaint.setStyle(mStyle == SOLID ? Paint.Style.FILL : Paint.Style.STROKE);
+        mProgressBackgroundPaint.setStyle(mStyle == SOLID ? Paint.Style.FILL : Paint.Style.STROKE);
         invalidate();
     }
 
@@ -431,7 +459,7 @@ public class CircleProgressBar extends ProgressBar {
     public void setCap(Paint.Cap cap) {
         mCap = cap;
         mProgressPaint.setStrokeCap(cap);
-        mBackgroundPaint.setStrokeCap(cap);
+        mProgressBackgroundPaint.setStrokeCap(cap);
         invalidate();
     }
 }

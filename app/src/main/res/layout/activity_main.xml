@@ -84,6 +84,7 @@
         app:progress_start_color="@color/holo_green_light"
         app:progress_end_color="@color/holo_green_light"
         app:progress_text_color="@color/holo_green_light"
+        app:background_color="@color/holo_purple"
         android:layout_width="50dp"
         android:layout_height="50dp" />
 
