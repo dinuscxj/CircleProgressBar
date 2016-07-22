@@ -10,7 +10,7 @@
 #### Gradle
  ```gradle
  dependencies {
-    compile 'com.dinuscxj:circleprogressbar:1.1.0'
+    compile 'com.dinuscxj:circleprogressbar:1.1.1'
  }
  ```
 

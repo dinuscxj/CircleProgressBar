@@ -12,7 +12,7 @@ If you are interested in cool loading animations, you can see [LoadingDrawable](
 #### Gradle
  ```gradle
  dependencies {
-    compile 'com.dinuscxj:circleprogressbar:1.1.0'
+    compile 'com.dinuscxj:circleprogressbar:1.1.1'
  }
  ```
 
