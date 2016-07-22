@@ -35,6 +35,10 @@ The **style**:
 * solid_line
 * solid
 
+The **background color**
+
+* background_color
+
 The **progress text**:
 
 * text color
@@ -73,6 +77,8 @@ for example :
 	android:layout_height="50dp"
 
 	app:style="line"
+	
+	app:background_color="@color/holo_red_light"
 
 	app:progress_text_color="@color/holo_purple"
 	app:progress_text_size="@dimen/progress_text_size"
