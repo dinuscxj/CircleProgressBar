@@ -105,6 +105,7 @@ for example :
 ### About me
 I like Android, like open source, and like doing something interesting. :)
 If you like CircleProgressBar or use it, you can star this repo and send me some feedback. Thanks! ~_~
+ ***QQ Group:*** **342748245**
 
 ### License
     Copyright 2015-2019 dinuscxj

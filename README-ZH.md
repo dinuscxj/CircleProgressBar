@@ -103,6 +103,7 @@ The **line style**:
 ### 关于我
 本人喜欢android、开源而且比较喜欢做一些有意思的东西 :)
 如果你喜欢CircleProgressBar或者正在使用它，欢迎star这个项目， 并且希望反馈给我一些建议. 谢谢! ~_~
+ ***QQ 群:*** **342748245**
 
 ### License
     Copyright 2015-2019 dinuscxj
