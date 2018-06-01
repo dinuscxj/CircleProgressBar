@@ -16,11 +16,18 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.SweepGradient;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.IntDef;
+import android.text.TextPaint;
+import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.ProgressBar;
 
-public class CircleProgressBar extends ProgressBar {
+public class CircleProgressBar extends View {
+    private static final int DEFAULT_MAX = 100;
+
     private static final int LINE = 0;
     private static final int SOLID = 1;
     private static final int SOLID_LINE = 2;
@@ -39,7 +46,6 @@ public class CircleProgressBar extends ProgressBar {
 
     private static final String COLOR_FFF2A670 = "#fff2a670";
     private static final String COLOR_FFD3D3D5 = "#ffe3e3e5";
-    private static final String DEFAULT_PATTERN = "%d%%";
 
     private final RectF mProgressRectF = new RectF();
     private final Rect mProgressTextRect = new Rect();
@@ -49,11 +55,14 @@ public class CircleProgressBar extends ProgressBar {
 
     private final Paint mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    private final Paint mProgressTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint mProgressTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 
     private float mRadius;
     private float mCenterX;
     private float mCenterY;
+
+    private int mProgress;
+    private int mMax = DEFAULT_MAX;
 
     //Background Color of the progress bar
     private int mBackgroundColor;
@@ -77,10 +86,8 @@ public class CircleProgressBar extends ProgressBar {
     //Background color of the progress of the progress bar
     private int mProgressBackgroundColor;
 
-    //If mDrawProgressText is true, will draw the progress text. otherwise, will not draw the progress text.
-    private boolean mDrawProgressText;
     //Format the current progress value to the specified format
-    private String mProgressTextFormatPattern;
+    private ProgressFormatter mProgressFormatter = new DefaultProgressFormatter();
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({LINE, SOLID, SOLID_LINE})
@@ -108,7 +115,6 @@ public class CircleProgressBar extends ProgressBar {
 
     public CircleProgressBar(Context context, AttributeSet attrs) {
         super(context, attrs);
-        adjustIndeterminate();
         initFromAttributes(context, attrs);
         initPaint();
     }
@@ -122,11 +128,7 @@ public class CircleProgressBar extends ProgressBar {
 
         mBackgroundColor = a.getColor(R.styleable.CircleProgressBar_background_color, Color.TRANSPARENT);
 
-        mDrawProgressText = a.getBoolean(R.styleable.CircleProgressBar_draw_progress_text, true);
-
         mLineCount = a.getInt(R.styleable.CircleProgressBar_line_count, DEFAULT_LINE_COUNT);
-        mProgressTextFormatPattern = a.hasValue(R.styleable.CircleProgressBar_progress_text_format_pattern) ?
-                a.getString(R.styleable.CircleProgressBar_progress_text_format_pattern) : DEFAULT_PATTERN;
 
         mStyle = a.getInt(R.styleable.CircleProgressBar_style, LINE);
         mShader = a.getInt(R.styleable.CircleProgressBar_progress_shader, LINEAR);
@@ -189,8 +191,8 @@ public class CircleProgressBar extends ProgressBar {
                     float rotateDegrees = (float) (DEFAULT_START_DEGREE
                             - (mCap == Paint.Cap.BUTT && mStyle == SOLID_LINE ? 0 : Math.toDegrees(radian)));
 
-                    shader = new SweepGradient(mCenterX, mCenterY, new int[] {mProgressStartColor, mProgressEndColor},
-                            new float[] {0.0f, 1.0f});
+                    shader = new SweepGradient(mCenterX, mCenterY, new int[]{mProgressStartColor, mProgressEndColor},
+                            new float[]{0.0f, 1.0f});
                     Matrix matrix = new Matrix();
                     matrix.postRotate(rotateDegrees, mCenterX, mCenterY);
                     shader.setLocalMatrix(matrix);
@@ -201,33 +203,6 @@ public class CircleProgressBar extends ProgressBar {
         } else {
             mProgressPaint.setShader(null);
             mProgressPaint.setColor(mProgressStartColor);
-        }
-    }
-
-    /**
-     * In order to work well, need to modify some of the following fields through reflection.
-     * Another available way: write the following attributes to the xml
-     * <p>
-     * android:indeterminateOnly="false"
-     * android:indeterminate="false"
-     */
-    private void adjustIndeterminate() {
-        try {
-            Field mOnlyIndeterminateField = ProgressBar.class.getDeclaredField("mOnlyIndeterminate");
-            mOnlyIndeterminateField.setAccessible(true);
-            mOnlyIndeterminateField.set(this, false);
-
-            Field mIndeterminateField = ProgressBar.class.getDeclaredField("mIndeterminate");
-            mIndeterminateField.setAccessible(true);
-            mIndeterminateField.set(this, false);
-
-            Field mCurrentDrawableField = ProgressBar.class.getDeclaredField("mCurrentDrawable");
-            mCurrentDrawableField.setAccessible(true);
-            mCurrentDrawableField.set(this, null);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
         }
     }
 
@@ -245,16 +220,21 @@ public class CircleProgressBar extends ProgressBar {
     }
 
     private void drawProgressText(Canvas canvas) {
-        if (!mDrawProgressText) {
+        if (mProgressFormatter == null) {
             return;
         }
 
-        String progressText = String.format(mProgressTextFormatPattern, getProgress());
+        CharSequence progressText = mProgressFormatter.format(mProgress, mMax);
+
+        if (TextUtils.isEmpty(progressText)) {
+            return;
+        }
 
         mProgressTextPaint.setTextSize(mProgressTextSize);
         mProgressTextPaint.setColor(mProgressTextColor);
-        mProgressTextPaint.getTextBounds(progressText, 0, progressText.length(), mProgressTextRect);
-        canvas.drawText(progressText, mCenterX, mCenterY + mProgressTextRect.height() / 2, mProgressTextPaint);
+
+        mProgressTextPaint.getTextBounds(String.valueOf(progressText), 0, progressText.length(), mProgressTextRect);
+        canvas.drawText(progressText, 0, progressText.length(), mCenterX, mCenterY + mProgressTextRect.height() / 2, mProgressTextPaint);
     }
 
     private void drawProgress(Canvas canvas) {
@@ -280,7 +260,7 @@ public class CircleProgressBar extends ProgressBar {
         float outerCircleRadius = mRadius;
         float interCircleRadius = mRadius - mLineWidth;
 
-        int progressLineCount = (int) ((float) getProgress() / (float) getMax() * mLineCount);
+        int progressLineCount = (int) ((float) mProgress / (float) mMax * mLineCount);
 
         for (int i = 0; i < mLineCount; i++) {
             float rotateDegrees = i * unitDegrees;
@@ -304,7 +284,7 @@ public class CircleProgressBar extends ProgressBar {
      */
     private void drawSolidProgress(Canvas canvas) {
         canvas.drawArc(mProgressRectF, DEFAULT_START_DEGREE, 360.0f, false, mProgressBackgroundPaint);
-        canvas.drawArc(mProgressRectF, DEFAULT_START_DEGREE, 360.0f * getProgress() / getMax(), true, mProgressPaint);
+        canvas.drawArc(mProgressRectF, DEFAULT_START_DEGREE, 360.0f * mProgress / mMax, true, mProgressPaint);
     }
 
     /**
@@ -312,7 +292,7 @@ public class CircleProgressBar extends ProgressBar {
      */
     private void drawSolidLineProgress(Canvas canvas) {
         canvas.drawArc(mProgressRectF, DEFAULT_START_DEGREE, 360.0f, false, mProgressBackgroundPaint);
-        canvas.drawArc(mProgressRectF, DEFAULT_START_DEGREE, 360.0f * getProgress() / getMax(), false, mProgressPaint);
+        canvas.drawArc(mProgressRectF, DEFAULT_START_DEGREE, 360.0f * mProgress / mMax, false, mProgressPaint);
     }
 
     /**
@@ -336,23 +316,15 @@ public class CircleProgressBar extends ProgressBar {
         mProgressRectF.inset(mProgressStrokeWidth / 2, mProgressStrokeWidth / 2);
     }
 
-    public int getBackgroundColor() {
-        return mBackgroundColor;
-    }
-
     public void setBackgroundColor(int backgroundColor) {
         this.mBackgroundColor = backgroundColor;
         mBackgroundPaint.setColor(backgroundColor);
         invalidate();
     }
 
-    public void setProgressTextFormatPattern(String progressTextformatPattern) {
-        this.mProgressTextFormatPattern = progressTextformatPattern;
+    public void setProgressFormatter(ProgressFormatter progressFormatter) {
+        this.mProgressFormatter = progressFormatter;
         invalidate();
-    }
-
-    public String getProgressTextFormatPattern() {
-        return mProgressTextFormatPattern;
     }
 
     public void setProgressStrokeWidth(float progressStrokeWidth) {
@@ -361,17 +333,9 @@ public class CircleProgressBar extends ProgressBar {
         invalidate();
     }
 
-    public float getProgressStrokeWidth() {
-        return mProgressStrokeWidth;
-    }
-
     public void setProgressTextSize(float progressTextSize) {
         this.mProgressTextSize = progressTextSize;
         invalidate();
-    }
-
-    public float getProgressTextSize() {
-        return mProgressTextSize;
     }
 
     public void setProgressStartColor(int progressStartColor) {
@@ -380,27 +344,15 @@ public class CircleProgressBar extends ProgressBar {
         invalidate();
     }
 
-    public int getProgressStartColor() {
-        return mProgressStartColor;
-    }
-
     public void setProgressEndColor(int progressEndColor) {
         this.mProgressEndColor = progressEndColor;
         updateProgressShader();
         invalidate();
     }
 
-    public int getProgressEndColor() {
-        return mProgressEndColor;
-    }
-
     public void setProgressTextColor(int progressTextColor) {
         this.mProgressTextColor = progressTextColor;
         invalidate();
-    }
-
-    public int getProgressTextColor() {
-        return mProgressTextColor;
     }
 
     public void setProgressBackgroundColor(int progressBackgroundColor) {
@@ -409,30 +361,14 @@ public class CircleProgressBar extends ProgressBar {
         invalidate();
     }
 
-    public int getProgressBackgroundColor() {
-        return mProgressBackgroundColor;
-    }
-
-    public int getLineCount() {
-        return mLineCount;
-    }
-
     public void setLineCount(int lineCount) {
         this.mLineCount = lineCount;
         invalidate();
     }
 
-    public float getLineWidth() {
-        return mLineWidth;
-    }
-
     public void setLineWidth(float lineWidth) {
         this.mLineWidth = lineWidth;
         invalidate();
-    }
-
-    public int getStyle() {
-        return mStyle;
     }
 
     public void setStyle(@Style int style) {
@@ -442,18 +378,10 @@ public class CircleProgressBar extends ProgressBar {
         invalidate();
     }
 
-    public int getShader() {
-        return mShader;
-    }
-
     public void setShader(@ShaderMode int shader) {
         mShader = shader;
         updateProgressShader();
         invalidate();
-    }
-
-    public Paint.Cap getCap() {
-        return mCap;
     }
 
     public void setCap(Paint.Cap cap) {
@@ -462,4 +390,85 @@ public class CircleProgressBar extends ProgressBar {
         mProgressBackgroundPaint.setStrokeCap(cap);
         invalidate();
     }
+
+    public void setProgress(int progress) {
+        this.mProgress = progress;
+        invalidate();
+    }
+
+    public void setMax(int max) {
+        this.mMax = max;
+        invalidate();
+    }
+
+    public int getProgress() {
+        return mProgress;
+    }
+
+    public int getMax() {
+        return mMax;
+    }
+
+    public interface ProgressFormatter {
+        CharSequence format(int progress, int max);
+    }
+
+    private static final class DefaultProgressFormatter implements ProgressFormatter {
+        private static final String DEFAULT_PATTERN = "%d%%";
+
+        @Override
+        public CharSequence format(int progress, int max) {
+            return String.format(DEFAULT_PATTERN, (int) ((float) progress / (float) max * 100));
+        }
+    }
+
+    private static final class SavedState extends BaseSavedState {
+        int progress;
+
+        SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        private SavedState(Parcel in) {
+            super(in);
+            progress = in.readInt();
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeInt(progress);
+        }
+
+        public static final Parcelable.Creator<SavedState> CREATOR
+                = new Parcelable.Creator<SavedState>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
+    }
+
+    @Override
+    public Parcelable onSaveInstanceState() {
+        // Force our ancestor class to save its state
+        Parcelable superState = super.onSaveInstanceState();
+        SavedState ss = new SavedState(superState);
+
+        ss.progress = mProgress;
+
+        return ss;
+    }
+
+    @Override
+    public void onRestoreInstanceState(Parcelable state) {
+        SavedState ss = (SavedState) state;
+        super.onRestoreInstanceState(ss.getSuperState());
+
+        setProgress(ss.progress);
+    }
+
 }

@@ -38,7 +38,6 @@
         app:style="solid"
         app:progress_shader="radial"
         app:progress_stroke_width="1dp"
-        app:progress_text_format_pattern="@string/progress_text_format_pattern"
         app:progress_background_color="@color/holo_darker_gray"
         app:progress_start_color="@color/holo_red_light"
         app:progress_text_color="@color/holo_red_light"
@@ -88,17 +87,14 @@
         android:layout_width="50dp"
         android:layout_height="50dp" />
 
-
     <com.dinuscxj.progressbar.CircleProgressBar
         android:id="@+id/custom_progress6"
         android:layout_marginTop="@dimen/default_margin"
         app:style="line"
-        app:draw_progress_text="false"
         app:progress_background_color="@color/holo_darker_gray"
         app:progress_start_color="@color/holo_green_light"
         app:progress_text_color="@color/holo_green_light"
         android:layout_width="50dp"
         android:layout_height="50dp" />
-
 
 </LinearLayout>

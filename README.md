@@ -12,7 +12,7 @@ If you are interested in cool loading animations, you can see [LoadingDrawable](
 #### Gradle
  ```gradle
  dependencies {
-    compile 'com.dinuscxj:circleprogressbar:1.1.1'
+    compile 'com.dinuscxj:circleprogressbar:1.2.0'
  }
  ```
 
@@ -71,6 +71,8 @@ The **line style**:
 * count
 
 for example :
+In the xml
+
 ```java
 <com.dinuscxj.progressbar.CircleProgressBar
 	android:layout_width="50dp"
@@ -82,8 +84,6 @@ for example :
 
 	app:progress_text_color="@color/holo_purple"
 	app:progress_text_size="@dimen/progress_text_size"
-	app:draw_progress_text="true"
-	app:progress_text_format_pattern="@string/progress_text_format_pattern"
 
 	app:progress_stroke_width="1dp"
 	app:progress_start_color="@color/holo_purple"
@@ -96,6 +96,24 @@ for example :
 
 	app:line_width="4dp"
 	app:line_count="30"/>
+```
+
+format progress
+``` java
+     private static final class MyProgressFormatter implements ProgressFormatter {
+         private static final String DEFAULT_PATTERN = "%d%%";
+ 
+         @Override
+         public CharSequence format(int progress, int max) {
+             return String.format(DEFAULT_PATTERN, (int) ((float) progress / (float) max * 100));
+         }
+     }
+     
+     // set the ProgressFormatter as you want
+     CircleProgressBar.setProgressFormatter(new MyProgressFromatter);
+     // hide the progress
+     CircleProgressBar.setProgressFormatter(null);
+     
 ```
 ### Advantages
 1. extends ProgressBar, do not care to save the current state of progress, ProgressBar has written in to help us in onSaveInstanceState () and onRestoreInstanceState (Parcelable state).

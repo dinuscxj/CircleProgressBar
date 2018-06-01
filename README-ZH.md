@@ -10,7 +10,7 @@
 #### Gradle
  ```gradle
  dependencies {
-    compile 'com.dinuscxj:circleprogressbar:1.1.1'
+    compile 'com.dinuscxj:circleprogressbar:1.2.0'
  }
  ```
 
@@ -80,8 +80,6 @@ The **line style**:
 	
 	app:progress_text_color="@color/holo_purple"
 	app:progress_text_size="@dimen/progress_text_size"
-	app:draw_progress_text="true"
-	app:progress_text_format_pattern="@string/progress_text_format_pattern"
 
 	app:progress_stroke_width="1dp"
 	app:progress_start_color="@color/holo_purple"
@@ -94,6 +92,24 @@ The **line style**:
 
 	app:line_width="4dp"
 	app:line_count="30"/>
+```
+
+格式化 progress
+``` java
+     private static final class MyProgressFormatter implements ProgressFormatter {
+         private static final String DEFAULT_PATTERN = "%d%%";
+ 
+         @Override
+         public CharSequence format(int progress, int max) {
+             return String.format(DEFAULT_PATTERN, (int) ((float) progress / (float) max * 100));
+         }
+     }
+     
+     // 设置你想要的ProgressFormatter
+     CircleProgressBar.setProgressFormatter(new MyProgressFromatter);
+     // 隐藏进度的显示
+     CircleProgressBar.setProgressFormatter(null);
+     
 ```
 ### 优点
 1. 继承ProgressBar， 不必关心当前进度状态的保存， ProgressBar 已经在onSaveInstanceState（）和 onRestoreInstanceState(Parcelable state)中帮我们写好了。

@@ -1,8 +1,15 @@
 package com.dinuscxj.circleprogressbar;
 
 import android.animation.ValueAnimator;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 
 import com.dinuscxj.progressbar.CircleProgressBar;
 
@@ -30,6 +37,14 @@ public class MainActivity extends AppCompatActivity {
         mCustomProgressBar4 = (CircleProgressBar) findViewById(R.id.custom_progress4);
         mCustomProgressBar5 = (CircleProgressBar) findViewById(R.id.custom_progress5);
         mCustomProgressBar6 = (CircleProgressBar) findViewById(R.id.custom_progress6);
+
+        mCustomProgressBar5.setProgressFormatter(new CircleProgressBar.ProgressFormatter() {
+            @Override
+            public CharSequence format(int progress, int max) {
+                return progress + "s";
+            }
+        });
+        mCustomProgressBar6.setProgressFormatter(null);
     }
 
     @Override
