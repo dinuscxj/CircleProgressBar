@@ -1,6 +1,6 @@
 
 ## CircleProgressBar
-[CircleProgressBar](https://github.com/dinuscxj/CircleProgressBar)继承ProgressBar, 是包含实心和线条两种风格的圆环进度条. 此外, 进度值可以随意定制.
+[CircleProgressBar](https://github.com/dinuscxj/CircleProgressBar)继承View, 是包含实心和线条两种风格的圆环进度条. 此外, 进度值可以随意定制.
 如果你对酷炫的进度条比较感兴趣, 或许你更喜欢 [LoadingDrawable](https://github.com/dinuscxj/LoadingDrawable).
 
 ![](https://raw.githubusercontent.com/dinuscxj/CircleProgressBar/master/Preview/CircleProgressBar.gif?width=300)
