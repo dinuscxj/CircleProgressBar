@@ -2,7 +2,7 @@
 ## CircleProgressBar
 [中文版文档](https://github.com/dinuscxj/CircleProgressBar/blob/master/README-ZH.md)&nbsp;&nbsp;&nbsp;
 
-The [CircleProgressBar](https://github.com/dinuscxj/CircleProgressBar) extends ProgressBar, It has both solid and line two styles. Besides, progress value can be freely customized.
+The [CircleProgressBar](https://github.com/dinuscxj/CircleProgressBar) extends View, It has both solid and line two styles. Besides, progress value can be freely customized.
 If you are interested in cool loading animations, you can see [LoadingDrawable](https://github.com/dinuscxj/LoadingDrawable).
 
 ![](https://raw.githubusercontent.com/dinuscxj/CircleProgressBar/master/Preview/CircleProgressBar.gif?width=300)
