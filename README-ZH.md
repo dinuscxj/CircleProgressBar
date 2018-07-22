@@ -10,7 +10,7 @@
 #### Gradle
  ```gradle
  dependencies {
-    compile 'com.dinuscxj:circleprogressbar:1.2.0'
+    compile 'com.dinuscxj:circleprogressbar:1.3.0'
  }
  ```
 
@@ -47,9 +47,11 @@ The **progress text**:
 The **progress circle**:
 
 * width
-* start_color
-* end_color
+* start degree
+* start color
+* end color
 * background color
+* draw background outside progress
 
 The **progress_shader**
 
@@ -85,6 +87,8 @@ The **line style**:
 	app:progress_start_color="@color/holo_purple"
 	app:progress_end_color="@color/holo_green_light"
 	app:progress_background_color="@color/holo_darker_gray"
+	app:progress_start_degree="-90"
+	app:drawBackgroundOutsideProgress="true"
 
 	app:progress_shader="sweep"
     

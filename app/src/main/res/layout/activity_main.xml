@@ -15,8 +15,11 @@
         android:id="@+id/solid_progress"
         android:layout_marginTop="@dimen/default_margin"
         app:style="solid"
+        app:progress_start_degree="0"
         app:progress_text_color="@color/holo_blue_light"
-        app:progress_stroke_width="3dp"
+        app:progress_background_color="@color/holo_darker_gray"
+        app:progress_start_color="@android:color/holo_green_light"
+        app:progress_end_color="@android:color/holo_green_light"
         android:layout_width="50dp"
         android:layout_height="50dp" />
 
@@ -24,12 +27,13 @@
         android:id="@+id/custom_progress1"
         android:layout_marginTop="@dimen/default_margin"
         app:style="line"
+        app:drawBackgroundOutsideProgress="true"
         app:progress_stroke_width="1dp"
         app:progress_background_color="@color/holo_darker_gray"
-        app:progress_start_color="@color/holo_green_light"
-        app:progress_end_color="@color/holo_red_light"
+        app:progress_start_color="@android:color/transparent"
+        app:progress_end_color="@android:color/transparent"
         app:progress_text_color="@color/holo_blue_light"
-        android:layout_width="50dp"
+        android:layout_width="100dp"
         android:layout_height="50dp" />
 
     <com.dinuscxj.progressbar.CircleProgressBar
@@ -83,7 +87,6 @@
         app:progress_start_color="@color/holo_green_light"
         app:progress_end_color="@color/holo_green_light"
         app:progress_text_color="@color/holo_green_light"
-        app:background_color="@color/holo_purple"
         android:layout_width="50dp"
         android:layout_height="50dp" />
 
