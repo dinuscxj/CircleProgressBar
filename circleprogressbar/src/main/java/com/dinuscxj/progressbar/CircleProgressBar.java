@@ -1,10 +1,8 @@
 package com.dinuscxj.progressbar;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
@@ -17,24 +15,28 @@ import android.graphics.Shader;
 import android.graphics.SweepGradient;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.IntDef;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.IntDef;
+
 public class CircleProgressBar extends View {
+    public static final int LINE = 0;
+    public static final int SOLID = 1;
+    public static final int SOLID_LINE = 2;
+
+    public static final int LINEAR = 0;
+    public static final int RADIAL = 1;
+    public static final int SWEEP = 2;
+
     private static final int DEFAULT_MAX = 100;
     private static final float MAX_DEGREE = 360.0f;
     private static final float LINEAR_START_DEGREE = 90.0f;
-
-    private static final int LINE = 0;
-    private static final int SOLID = 1;
-    private static final int SOLID_LINE = 2;
-
-    private static final int LINEAR = 0;
-    private static final int RADIAL = 1;
-    private static final int SWEEP = 2;
 
     private static final int DEFAULT_START_DEGREE = -90;
 
@@ -48,6 +50,7 @@ public class CircleProgressBar extends View {
     private static final String COLOR_FFD3D3D5 = "#ffe3e3e5";
 
     private final RectF mProgressRectF = new RectF();
+    private final RectF mBoundsRectF = new RectF();
     private final Rect mProgressTextRect = new Rect();
 
     private final Paint mProgressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -88,28 +91,21 @@ public class CircleProgressBar extends View {
     // whether draw the background only outside the progress area or not
     private boolean mDrawBackgroundOutsideProgress;
 
-    //Format the current progress value to the specified format
+    // Format the current progress value to the specified format
     private ProgressFormatter mProgressFormatter = new DefaultProgressFormatter();
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({LINE, SOLID, SOLID_LINE})
-    private @interface Style {
-    }
-
-    //The style of the progress color
+    // The style of the progress color
     @Style
     private int mStyle;
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({LINEAR, RADIAL, SWEEP})
-    private @interface ShaderMode {
-    }
-
-    //The Shader of mProgressPaint
+    // The Shader of mProgressPaint
     @ShaderMode
     private int mShader;
-    //The Stroke Cap of mProgressPaint and mProgressBackgroundPaint
+    // The Stroke Cap of mProgressPaint and mProgressBackgroundPaint
     private Paint.Cap mCap;
+
+    // The blur radius of mProgressPaint
+    private int mBlurRadius;
+    // The blur style of mProgressPaint
+    private BlurMaskFilter.Blur mBlurStyle;
 
     public CircleProgressBar(Context context) {
         this(context, null);
@@ -121,6 +117,11 @@ public class CircleProgressBar extends View {
         initPaint();
     }
 
+    private static int dip2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
+
     /**
      * Basic data initialization
      */
@@ -130,14 +131,14 @@ public class CircleProgressBar extends View {
 
         mLineCount = a.getInt(R.styleable.CircleProgressBar_line_count, DEFAULT_LINE_COUNT);
 
-        mStyle = a.getInt(R.styleable.CircleProgressBar_style, LINE);
+        mStyle = a.getInt(R.styleable.CircleProgressBar_progress_style, LINE);
         mShader = a.getInt(R.styleable.CircleProgressBar_progress_shader, LINEAR);
         mCap = a.hasValue(R.styleable.CircleProgressBar_progress_stroke_cap) ?
                 Paint.Cap.values()[a.getInt(R.styleable.CircleProgressBar_progress_stroke_cap, 0)] : Paint.Cap.BUTT;
 
-        mLineWidth = a.getDimensionPixelSize(R.styleable.CircleProgressBar_line_width, UnitUtils.dip2px(getContext(), DEFAULT_LINE_WIDTH));
-        mProgressTextSize = a.getDimensionPixelSize(R.styleable.CircleProgressBar_progress_text_size, UnitUtils.dip2px(getContext(), DEFAULT_PROGRESS_TEXT_SIZE));
-        mProgressStrokeWidth = a.getDimensionPixelSize(R.styleable.CircleProgressBar_progress_stroke_width, UnitUtils.dip2px(getContext(), DEFAULT_PROGRESS_STROKE_WIDTH));
+        mLineWidth = a.getDimensionPixelSize(R.styleable.CircleProgressBar_line_width, dip2px(getContext(), DEFAULT_LINE_WIDTH));
+        mProgressTextSize = a.getDimensionPixelSize(R.styleable.CircleProgressBar_progress_text_size, dip2px(getContext(), DEFAULT_PROGRESS_TEXT_SIZE));
+        mProgressStrokeWidth = a.getDimensionPixelSize(R.styleable.CircleProgressBar_progress_stroke_width, dip2px(getContext(), DEFAULT_PROGRESS_STROKE_WIDTH));
 
         mProgressStartColor = a.getColor(R.styleable.CircleProgressBar_progress_start_color, Color.parseColor(COLOR_FFF2A670));
         mProgressEndColor = a.getColor(R.styleable.CircleProgressBar_progress_end_color, Color.parseColor(COLOR_FFF2A670));
@@ -146,6 +147,23 @@ public class CircleProgressBar extends View {
 
         mStartDegree = a.getInt(R.styleable.CircleProgressBar_progress_start_degree, DEFAULT_START_DEGREE);
         mDrawBackgroundOutsideProgress = a.getBoolean(R.styleable.CircleProgressBar_drawBackgroundOutsideProgress, false);
+
+        mBlurRadius = a.getDimensionPixelSize(R.styleable.CircleProgressBar_progress_blur_radius, 0);
+        int blurStyle = a.getInt(R.styleable.CircleProgressBar_progress_blur_style, 0);
+        switch (blurStyle) {
+            case 1:
+                mBlurStyle = BlurMaskFilter.Blur.SOLID;
+                break;
+            case 2:
+                mBlurStyle = BlurMaskFilter.Blur.OUTER;
+                break;
+            case 3:
+                mBlurStyle = BlurMaskFilter.Blur.INNER;
+                break;
+            default:
+                mBlurStyle = BlurMaskFilter.Blur.NORMAL;
+                break;
+        }
 
         a.recycle();
     }
@@ -161,11 +179,22 @@ public class CircleProgressBar extends View {
         mProgressPaint.setStrokeWidth(mProgressStrokeWidth);
         mProgressPaint.setColor(mProgressStartColor);
         mProgressPaint.setStrokeCap(mCap);
+        updateMaskBlurFilter();
 
         mProgressBackgroundPaint.setStyle(mStyle == SOLID ? Paint.Style.FILL : Paint.Style.STROKE);
         mProgressBackgroundPaint.setStrokeWidth(mProgressStrokeWidth);
         mProgressBackgroundPaint.setColor(mProgressBackgroundColor);
         mProgressBackgroundPaint.setStrokeCap(mCap);
+    }
+
+
+    private void updateMaskBlurFilter() {
+        if (mBlurStyle != null && mBlurRadius > 0) {
+            setLayerType(LAYER_TYPE_SOFTWARE, mProgressPaint);
+            mProgressPaint.setMaskFilter(new BlurMaskFilter(mBlurRadius, mBlurStyle));
+        } else {
+            mProgressPaint.setMaskFilter(null);
+        }
     }
 
     /**
@@ -326,168 +355,23 @@ public class CircleProgressBar extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        mCenterX = w / 2;
-        mCenterY = h / 2;
+        mBoundsRectF.left = getPaddingLeft();
+        mBoundsRectF.top = getPaddingTop();
+        mBoundsRectF.right = w - getPaddingRight();
+        mBoundsRectF.bottom = h - getPaddingBottom();
 
-        mRadius = Math.min(mCenterX, mCenterY);
-        mProgressRectF.top = mCenterY - mRadius;
-        mProgressRectF.bottom = mCenterY + mRadius;
-        mProgressRectF.left = mCenterX - mRadius;
-        mProgressRectF.right = mCenterX + mRadius;
+        mCenterX = mBoundsRectF.centerX();
+        mCenterY = mBoundsRectF.centerY();
+
+        mRadius = Math.min(mBoundsRectF.width(), mBoundsRectF.height()) / 2;
+
+        mProgressRectF.set(mBoundsRectF);
 
         updateProgressShader();
 
-        //Prevent the progress from clipping
         mProgressRectF.inset(mProgressStrokeWidth / 2, mProgressStrokeWidth / 2);
     }
 
-    public void setProgressFormatter(ProgressFormatter progressFormatter) {
-        this.mProgressFormatter = progressFormatter;
-        invalidate();
-    }
-
-    public void setProgressStrokeWidth(float progressStrokeWidth) {
-        this.mProgressStrokeWidth = progressStrokeWidth;
-        mProgressRectF.inset(mProgressStrokeWidth / 2, mProgressStrokeWidth / 2);
-        invalidate();
-    }
-
-    public void setProgressTextSize(float progressTextSize) {
-        this.mProgressTextSize = progressTextSize;
-        invalidate();
-    }
-
-    public void setProgressStartColor(int progressStartColor) {
-        this.mProgressStartColor = progressStartColor;
-        updateProgressShader();
-        invalidate();
-    }
-
-    public void setProgressEndColor(int progressEndColor) {
-        this.mProgressEndColor = progressEndColor;
-        updateProgressShader();
-        invalidate();
-    }
-
-    public void setProgressTextColor(int progressTextColor) {
-        this.mProgressTextColor = progressTextColor;
-        invalidate();
-    }
-
-    public void setProgressBackgroundColor(int progressBackgroundColor) {
-        this.mProgressBackgroundColor = progressBackgroundColor;
-        mProgressBackgroundPaint.setColor(mProgressBackgroundColor);
-        invalidate();
-    }
-
-    public void setLineCount(int lineCount) {
-        this.mLineCount = lineCount;
-        invalidate();
-    }
-
-    public void setLineWidth(float lineWidth) {
-        this.mLineWidth = lineWidth;
-        invalidate();
-    }
-
-    public void setStyle(@Style int style) {
-        this.mStyle = style;
-        mProgressPaint.setStyle(mStyle == SOLID ? Paint.Style.FILL : Paint.Style.STROKE);
-        mProgressBackgroundPaint.setStyle(mStyle == SOLID ? Paint.Style.FILL : Paint.Style.STROKE);
-        invalidate();
-    }
-
-    public void setShader(@ShaderMode int shader) {
-        mShader = shader;
-        updateProgressShader();
-        invalidate();
-    }
-
-    public void setCap(Paint.Cap cap) {
-        mCap = cap;
-        mProgressPaint.setStrokeCap(cap);
-        mProgressBackgroundPaint.setStrokeCap(cap);
-        invalidate();
-    }
-
-    public void setProgress(int progress) {
-        this.mProgress = progress;
-        invalidate();
-    }
-
-    public void setMax(int max) {
-        this.mMax = max;
-        invalidate();
-    }
-
-    public int getProgress() {
-        return mProgress;
-    }
-
-    public int getMax() {
-        return mMax;
-    }
-
-    public int getStartDegree() {
-        return mStartDegree;
-    }
-
-    public void setStartDegree(int startDegree) {
-        this.mStartDegree = startDegree;
-        invalidate();
-    }
-
-    public boolean isDrawBackgroundOutsideProgress() {
-        return mDrawBackgroundOutsideProgress;
-    }
-
-    public void setDrawBackgroundOutsideProgress(boolean drawBackgroundOutsideProgress) {
-        this.mDrawBackgroundOutsideProgress = drawBackgroundOutsideProgress;
-        invalidate();
-    }
-
-    public interface ProgressFormatter {
-        CharSequence format(int progress, int max);
-    }
-
-    private static final class DefaultProgressFormatter implements ProgressFormatter {
-        private static final String DEFAULT_PATTERN = "%d%%";
-
-        @Override
-        public CharSequence format(int progress, int max) {
-            return String.format(DEFAULT_PATTERN, (int) ((float) progress / (float) max * 100));
-        }
-    }
-
-    private static final class SavedState extends BaseSavedState {
-        int progress;
-
-        SavedState(Parcelable superState) {
-            super(superState);
-        }
-
-        private SavedState(Parcel in) {
-            super(in);
-            progress = in.readInt();
-        }
-
-        @Override
-        public void writeToParcel(Parcel out, int flags) {
-            super.writeToParcel(out, flags);
-            out.writeInt(progress);
-        }
-
-        public static final Parcelable.Creator<SavedState> CREATOR
-                = new Parcelable.Creator<SavedState>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
-
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
-    }
 
     @Override
     public Parcelable onSaveInstanceState() {
@@ -508,4 +392,171 @@ public class CircleProgressBar extends View {
         setProgress(ss.progress);
     }
 
+
+    public void setProgressFormatter(ProgressFormatter progressFormatter) {
+        mProgressFormatter = progressFormatter;
+        invalidate();
+    }
+
+    public void setProgressStrokeWidth(float progressStrokeWidth) {
+        mProgressStrokeWidth = progressStrokeWidth;
+
+        mProgressRectF.set(mBoundsRectF);
+
+        updateProgressShader();
+
+        mProgressRectF.inset(mProgressStrokeWidth / 2, mProgressStrokeWidth / 2);
+
+        invalidate();
+    }
+
+    public void setProgressTextSize(float progressTextSize) {
+        mProgressTextSize = progressTextSize;
+        invalidate();
+    }
+
+    public void setProgressStartColor(int progressStartColor) {
+        mProgressStartColor = progressStartColor;
+        updateProgressShader();
+        invalidate();
+    }
+
+    public void setProgressEndColor(int progressEndColor) {
+        mProgressEndColor = progressEndColor;
+        updateProgressShader();
+        invalidate();
+    }
+
+    public void setProgressTextColor(int progressTextColor) {
+        mProgressTextColor = progressTextColor;
+        invalidate();
+    }
+
+    public void setProgressBackgroundColor(int progressBackgroundColor) {
+        mProgressBackgroundColor = progressBackgroundColor;
+        mProgressBackgroundPaint.setColor(mProgressBackgroundColor);
+        invalidate();
+    }
+
+    public void setLineCount(int lineCount) {
+        mLineCount = lineCount;
+        invalidate();
+    }
+
+    public void setLineWidth(float lineWidth) {
+        mLineWidth = lineWidth;
+        invalidate();
+    }
+
+    public void setStyle(@Style int style) {
+        mStyle = style;
+        mProgressPaint.setStyle(mStyle == SOLID ? Paint.Style.FILL : Paint.Style.STROKE);
+        mProgressBackgroundPaint.setStyle(mStyle == SOLID ? Paint.Style.FILL : Paint.Style.STROKE);
+        invalidate();
+    }
+
+    public void setBlurRadius(int blurRadius) {
+        mBlurRadius = blurRadius;
+        updateMaskBlurFilter();
+        invalidate();
+    }
+
+    public void setBlurStyle(BlurMaskFilter.Blur blurStyle) {
+        mBlurStyle = blurStyle;
+        updateMaskBlurFilter();
+        invalidate();
+    }
+
+    public void setShader(@ShaderMode int shader) {
+        mShader = shader;
+        updateProgressShader();
+        invalidate();
+    }
+
+    public void setCap(Paint.Cap cap) {
+        mCap = cap;
+        mProgressPaint.setStrokeCap(cap);
+        mProgressBackgroundPaint.setStrokeCap(cap);
+        invalidate();
+    }
+
+    public void setStartDegree(int startDegree) {
+        mStartDegree = startDegree;
+        invalidate();
+    }
+
+    public void setDrawBackgroundOutsideProgress(boolean drawBackgroundOutsideProgress) {
+        mDrawBackgroundOutsideProgress = drawBackgroundOutsideProgress;
+        invalidate();
+    }
+
+    public int getProgress() {
+        return mProgress;
+    }
+
+    public void setProgress(int progress) {
+        mProgress = progress;
+        invalidate();
+    }
+
+    public int getMax() {
+        return mMax;
+    }
+
+    public void setMax(int max) {
+        mMax = max;
+        invalidate();
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({LINE, SOLID, SOLID_LINE})
+    private @interface Style {
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({LINEAR, RADIAL, SWEEP})
+    private @interface ShaderMode {
+    }
+
+    public interface ProgressFormatter {
+        CharSequence format(int progress, int max);
+    }
+
+    private static final class DefaultProgressFormatter implements ProgressFormatter {
+        private static final String DEFAULT_PATTERN = "%d%%";
+
+        @Override
+        public CharSequence format(int progress, int max) {
+            return String.format(DEFAULT_PATTERN, (int) ((float) progress / (float) max * 100));
+        }
+    }
+
+    private static final class SavedState extends BaseSavedState {
+        public static final Parcelable.Creator<SavedState> CREATOR
+                = new Parcelable.Creator<SavedState>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
+        int progress;
+
+        SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        private SavedState(Parcel in) {
+            super(in);
+            progress = in.readInt();
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeInt(progress);
+        }
+    }
 }

@@ -3,15 +3,11 @@ package com.dinuscxj.circleprogressbar;
 import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.RelativeSizeSpan;
+import android.view.View;
 
 import com.dinuscxj.progressbar.CircleProgressBar;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -29,14 +25,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mLineProgressBar = (CircleProgressBar) findViewById(R.id.line_progress);
-        mSolidProgressBar = (CircleProgressBar) findViewById(R.id.solid_progress);
-        mCustomProgressBar1 = (CircleProgressBar) findViewById(R.id.custom_progress1);
-        mCustomProgressBar2 = (CircleProgressBar) findViewById(R.id.custom_progress2);
-        mCustomProgressBar3 = (CircleProgressBar) findViewById(R.id.custom_progress3);
-        mCustomProgressBar4 = (CircleProgressBar) findViewById(R.id.custom_progress4);
-        mCustomProgressBar5 = (CircleProgressBar) findViewById(R.id.custom_progress5);
-        mCustomProgressBar6 = (CircleProgressBar) findViewById(R.id.custom_progress6);
+        mLineProgressBar = findViewById(R.id.line_progress);
+        mSolidProgressBar = findViewById(R.id.solid_progress);
+        mCustomProgressBar1 = findViewById(R.id.custom_progress1);
+        mCustomProgressBar2 = findViewById(R.id.custom_progress2);
+        mCustomProgressBar3 = findViewById(R.id.custom_progress3);
+        mCustomProgressBar4 = findViewById(R.id.custom_progress4);
+        mCustomProgressBar5 = findViewById(R.id.custom_progress5);
+        mCustomProgressBar6 = findViewById(R.id.custom_progress6);
 
         mCustomProgressBar5.setProgressFormatter(new CircleProgressBar.ProgressFormatter() {
             @Override
@@ -45,6 +41,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mCustomProgressBar6.setProgressFormatter(null);
+
+        mLineProgressBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mLineProgressBar.setStyle(CircleProgressBar.SOLID_LINE);
+                mLineProgressBar.setProgressTextColor(Color.RED);
+                mLineProgressBar.setProgressStartColor(Color.GREEN);
+                mLineProgressBar.setProgressEndColor(Color.BLUE);
+                mLineProgressBar.setProgressBackgroundColor(Color.YELLOW);
+                mLineProgressBar.setDrawBackgroundOutsideProgress(true);
+            }
+        });
     }
 
     @Override

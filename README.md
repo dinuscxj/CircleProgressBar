@@ -12,13 +12,13 @@ If you are interested in cool loading animations, you can see [LoadingDrawable](
 #### Gradle
  ```gradle
  dependencies {
-    compile 'com.dinuscxj:circleprogressbar:1.3.0'
+    compile 'com.dinuscxj:circleprogressbar:1.3.6'
  }
  ```
 
 #### Used in xml:
 
-```java
+```xml
 <com.dinuscxj.progressbar.CircleProgressBar
 	android:id="@+id/line_progress"
 	android:layout_marginTop="@dimen/default_margin"
@@ -29,7 +29,7 @@ If you are interested in cool loading animations, you can see [LoadingDrawable](
 ### Attributes
 There are several attributes you can set:
 
-The **style**:
+The **progress style**:
 
 * line （default）
 * solid_line
@@ -51,13 +51,20 @@ The **progress circle**:
 * background color
 * draw background outside progress
 
-The **progress_shader**
+The **progress shader**
 
 * linear (default，but if start_color and end_color equivalence, will not set the shader)
 * radial
 * sweep
 
-The **progress_stroke_cap**
+The **progress blur** (blur radius must larger than zero)
+
+* normal (default)
+* solid
+* outer
+* inner
+
+The **progress stroke cap**
 
 * butt (default)
 * round
@@ -71,12 +78,12 @@ The **line style**:
 for example :
 In the xml
 
-```java
+```xml
 <com.dinuscxj.progressbar.CircleProgressBar
 	android:layout_width="50dp"
 	android:layout_height="50dp"
 
-	app:style="line"
+	app:progress_style="line"
 	
 	app:background_color="@color/holo_red_light"
 
@@ -93,6 +100,9 @@ In the xml
 	app:progress_shader="sweep"
     
 	app:progress_stroke_cap="round"
+	
+	app:progress_blur_style="solid"
+	app:progress_blur_radius="5dp"
 
 	app:line_width="4dp"
 	app:line_count="30"/>

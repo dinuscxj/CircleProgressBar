@@ -12,7 +12,15 @@
     <attr name="progress_start_degree" format="integer|reference"/>
     <attr name="drawBackgroundOutsideProgress" format="boolean|reference"/>
 
-    <attr name="style">
+    <attr name="progress_blur_radius" format="dimension|reference"/>
+    <attr name="progress_blur_style">
+      <enum name="normal" value="0"/>
+      <enum name="solid" value="1"/>
+      <enum name="outer" value="2"/>
+      <enum name="inner" value="3"/>
+    </attr>
+
+    <attr name="progress_style">
       <enum name="line" value="0"/>
       <enum name="solid" value="1"/>
       <enum name="solid_line" value="2"/>

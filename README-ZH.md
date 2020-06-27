@@ -10,13 +10,13 @@
 #### Gradle
  ```gradle
  dependencies {
-    compile 'com.dinuscxj:circleprogressbar:1.3.0'
+    compile 'com.dinuscxj:circleprogressbar:1.3.6'
  }
  ```
 
 #### 用在xml中:
 
-```java
+```xml
 <com.dinuscxj.progressbar.CircleProgressBar
 	android:id="@+id/line_progress"
 	android:layout_marginTop="@dimen/default_margin"
@@ -59,7 +59,14 @@ The **progress_shader**
 * radial
 * sweep
 
-The **progress_stroke_cap**
+The **progress blur** (模糊半径（blur_radius）必须大于0)
+
+* normal (默认)
+* solid
+* outer
+* inner
+
+The **progress stroke cap**
 
 * butt (默认)
 * round
@@ -71,7 +78,7 @@ The **line style**:
 * count
 
 例如 :
-```java
+```xml
 <com.dinuscxj.progressbar.CircleProgressBar
 	android:layout_width="50dp"
 	android:layout_height="50dp"
@@ -93,6 +100,9 @@ The **line style**:
 	app:progress_shader="sweep"
     
 	app:progress_stroke_cap="round"
+	
+	app:progress_blur_style="solid"
+	app:progress_blur_radius="5dp"
 
 	app:line_width="4dp"
 	app:line_count="30"/>
