@@ -400,13 +400,11 @@ public class CircleProgressBar extends View {
 
     public void setProgressStrokeWidth(float progressStrokeWidth) {
         mProgressStrokeWidth = progressStrokeWidth;
-
+        mProgressPaint.setStrokeWidth(mProgressStrokeWidth);
+        mProgressBackgroundPaint.setStrokeWidth(mProgressStrokeWidth);
         mProgressRectF.set(mBoundsRectF);
-
         updateProgressShader();
-
         mProgressRectF.inset(mProgressStrokeWidth / 2, mProgressStrokeWidth / 2);
-
         invalidate();
     }
 
