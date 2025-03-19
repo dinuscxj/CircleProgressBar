@@ -25,6 +25,8 @@ import java.lang.annotation.RetentionPolicy;
 
 import androidx.annotation.IntDef;
 
+import com.dinuscxj.circleprogressbar.R;
+
 public class CircleProgressBar extends View {
     public static final int LINE = 0;
     public static final int SOLID = 1;

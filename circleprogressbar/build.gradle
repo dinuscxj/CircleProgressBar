@@ -1,19 +1,35 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+apply plugin: 'com.vanniktech.maven.publish'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+    namespace 'com.dinuscxj.circleprogressbar'
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
     }
     buildTypes {
+        debug {}
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -22,4 +38,42 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
 }
 
-apply from: 'publish.gradle'
+// Maven Publish
+import com.vanniktech.maven.publish.SonatypeHost
+
+mavenPublishing {
+    // publishToMavenCentral(SonatypeHost.DEFAULT)
+    // or when publishing to https://s01.oss.sonatype.org
+    // publishToMavenCentral(SonatypeHost.S01)
+    // or when publishing to https://central.sonatype.com/
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
+
+    coordinates("io.github.dinuscxj", "circleprogressbar", "1.4.1")
+
+    pom {
+        name = "CircleProgressBar"
+        description = "The CircleProgressBar extends View, It has both solid and line two styles. Besides, progress value can be freely customized"
+        inceptionYear = "2025"
+        url = "https://github.com/dinuscxj/CircleProgressBar"
+        licenses {
+            license {
+                name = "The Apache License, Version 2.0"
+                url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            }
+        }
+        developers {
+            developer {
+                id = "dinuscxj"
+                name = "Dinus"
+                url = "https://github.com/dinuscxj/"
+            }
+        }
+        scm {
+            url = "https://github.com/dinuscxj/CircleProgressBar"
+            connection = "scm:git:git://github.com/dinuscxj/CircleProgressBar.git"
+            developerConnection = "scm:git:ssh://github.com/dinuscxj/CircleProgressBar.git"
+        }
+    }
+}

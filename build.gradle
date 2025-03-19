@@ -2,19 +2,32 @@
 
 buildscript {
     repositories {
-        jcenter()
         google()
+        mavenCentral()
     }
+
+    ext.kotlin_version = '1.9.20' // 更新为与依赖匹配的版本
+
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.3'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5'
+        classpath "com.android.tools.build:gradle:8.0.2"
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.31.0-rc2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 allprojects {
     repositories {
-        jcenter()
         google()
+        mavenCentral()
     }
 }
+
+configurations.configureEach {
+    resolutionStrategy {
+        force "org.jetbrains.kotlin:kotlin-stdlib:1.9.20"
+        force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.20"
+        force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20"
+    }
+}
+
+
